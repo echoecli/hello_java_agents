@@ -34,7 +34,6 @@ public class AdvisorsController {
     public AdvisorsController(ChatClient.Builder builder, LogAdvisor logAdvisor) {
         // 先尝试全局配置 Advisor
         this.chatClient = builder
-                .defaultAdvisors(logAdvisor)
                 .build();
         this.logAdvisor = logAdvisor;
     }
@@ -45,7 +44,7 @@ public class AdvisorsController {
      * @return
      */
     @GetMapping("/stream")
-    public Flux<String> stream(@RequestParam String query) {
+    public String stream(@RequestParam String query) {
         System.err.println("=== Controller.stream() called ===");
         System.err.println("LogAdvisor instance: " + logAdvisor);
         System.err.println("LogAdvisor class: " + logAdvisor.getClass().getName());
@@ -58,9 +57,9 @@ public class AdvisorsController {
         return chatClient.prompt()
                 .system("你是一个王者荣耀资深高手，会各种职业级的对线经验")
                 .user(query)
+                .advisors(logAdvisor)
                 .options(chatOptions)
-                // 移除手动指定，使用全局配置
-                .stream()
+                .call()
                 .content();
     }
 }
