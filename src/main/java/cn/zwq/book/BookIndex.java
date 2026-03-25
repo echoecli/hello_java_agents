@@ -15,6 +15,7 @@ public class BookIndex {
      * {@link cn.zwq.control.ChatClientController}
      *
      * chapter 3 advisors
-     * {@link cn.zwq.control.AdvisorsController}
+     * 3.1 {@link cn.zwq.control.AdvisorsController}
+     * 3.2 {@link cn.zwq.control.AdvisorsChatMemoryController}
      */
 }
