@@ -15,3 +15,11 @@ spring:
       chat:
         options:
           model: qwen-plus
+
+# 图生视频配置
+video:
+  generation:
+    # 阿里云百炼图生视频API Key（可与上面的api-key相同或单独配置）
+    api-key: sk-7920241a9b354c2b8b63ae49a4136166
+    # 图生视频接口地址
+    base-url: https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis
