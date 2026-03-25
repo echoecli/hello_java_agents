@@ -32,7 +32,6 @@ public class AdvisorsController {
     private final LogAdvisor logAdvisor;
 
     public AdvisorsController(ChatClient.Builder builder, LogAdvisor logAdvisor) {
-        // 先尝试全局配置 Advisor
         this.chatClient = builder
                 .build();
         this.logAdvisor = logAdvisor;

@@ -17,5 +17,8 @@ public class BookIndex {
      * chapter 3 advisors
      * 3.1 {@link cn.zwq.control.AdvisorsController}
      * 3.2 {@link cn.zwq.control.AdvisorsChatMemoryController}
+     *
+     * chapter 4 prompt template
+     * {@link cn.zwq.control.PromptTemplateController}
      */
 }
