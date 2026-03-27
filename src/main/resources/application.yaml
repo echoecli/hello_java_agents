@@ -11,10 +11,22 @@ spring:
     dashscope:
       #阿里云百炼 apiKey
       api-key: sk-7920241a9b354c2b8b63ae49a4136166
-      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
       chat:
         options:
           model: qwen-plus
+      embedding:
+        options:
+          model: text-embedding-v3
+          dimensions: 1024
+    vectorstore:
+      redis:
+        initialize-schema: true
+        prefix: zwq_rag_prefix
+        index-name: zwq_rag_index
+  data:
+    redis:
+      host: 192.168.110.22
+      port: 6379
 
 # 图生视频配置
 video:
