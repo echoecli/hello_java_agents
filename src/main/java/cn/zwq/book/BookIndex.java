@@ -20,5 +20,12 @@ public class BookIndex {
      *
      * chapter 4 prompt template
      * {@link cn.zwq.control.PromptTemplateController}
+     *
+     * chapter 5 rag
+     * {@link cn.zwq.control.RagController}
+     *
+     * chapter 6 tool calling
+     * {@link cn.zwq.control.ToolCallingController}
      */
+
 }

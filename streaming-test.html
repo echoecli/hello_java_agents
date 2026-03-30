@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流式输出测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .input-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .response-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-height: 100px;
+            background-color: #fafafa;
+        }
+        .response-content {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status.connecting {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .status.connected {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .clear-btn {
+            background-color: #6c757d;
+        }
+        .clear-btn:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 RAG流式聊天测试</h1>
+        
+        <div class="input-group">
+            <label for="message">输入您的问题：</label>
+            <input type="text" id="message" placeholder="请输入要咨询的问题..." value="你好，介绍一下你自己">
+        </div>
+        
+        <button onclick="startStreaming()">🚀 开始流式对话</button>
+        <button onclick="stopStreaming()" id="stopBtn" disabled>⏹️ 停止</button>
+        <button onclick="clearResponse()" class="clear-btn">🗑️ 清空</button>
+        
+        <div id="status" class="status" style="display: none;"></div>
+        
+        <div class="response-container">
+            <div id="response" class="response-content"></div>
+        </div>
+    </div>
+
+    <script>
+        let eventSource = null;
+        let accumulatedResponse = '';
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+
+        function hideStatus() {
+            document.getElementById('status').style.display = 'none';
+        }
+
+        function startStreaming() {
+            const message = document.getElementById('message').value.trim();
+            if (!message) {
+                alert('请输入问题！');
+                return;
+            }
+
+            // 清空之前的响应
+            accumulatedResponse = '';
+            document.getElementById('response').textContent = '';
+            
+            // 更新按钮状态
+            document.querySelector('button').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            showStatus('正在连接...', 'connecting');
+
+            // 构造请求URL - 指向后端服务器端口
+            const url = `http://localhost:1314/rag/chat?message=${encodeURIComponent(message)}&conversationId=${Date.now()}`;
+            
+            try {
+                eventSource = new EventSource(url);
+                
+                eventSource.onopen = function(event) {
+                    console.log('连接已建立');
+                    showStatus('连接成功，开始接收数据...', 'connected');
+                };
+
+                eventSource.onmessage = function(event) {
+                    console.log('收到数据:', event.data);
+                    accumulatedResponse += event.data;
+                    document.getElementById('response').textContent = accumulatedResponse;
+                };
+
+                eventSource.onerror = function(event) {
+                    console.error('连接错误:', event);
+                    showStatus('连接出错，请检查控制台日志', 'error');
+                    stopStreaming();
+                };
+
+            } catch (error) {
+                console.error('创建EventSource失败:', error);
+                showStatus('浏览器不支持SSE或连接失败', 'error');
+                stopStreaming();
+            }
+        }
+
+        function stopStreaming() {
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            
+            // 恢复按钮状态
+            document.querySelector('button').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+            
+            hideStatus();
+        }
+
+        function clearResponse() {
+            document.getElementById('response').textContent = '';
+            accumulatedResponse = '';
+            document.getElementById('message').value = '';
+        }
+
+        // 页面卸载时清理连接
+        window.addEventListener('beforeunload', function() {
+            stopStreaming();
+        });
+
+        // 支持回车键发送
+        document.getElementById('message').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                startStreaming();
+            }
+        });
+    </script>
+</body>
+</html>
