@@ -26,6 +26,9 @@ public class BookIndex {
      *
      * chapter 6 tool calling
      * {@link cn.zwq.control.ToolCallingController}
+     *
+     * chapter 7 mcp
+     * {@link cn.zwq.control.McpController}
      */
 
 }
