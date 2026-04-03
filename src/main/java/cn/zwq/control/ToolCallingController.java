@@ -1,5 +1,7 @@
 package cn.zwq.control;
 
+import cn.hutool.db.sql.Order;
+import cn.zwq.component.OrderComponent;
 import cn.zwq.util.ai.DateUtil;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/toolCalling")
 public class ToolCallingController {
 
+    private final OrderComponent orderComponent;
 
     private final ChatClient chatClient;
 
 
-    public ToolCallingController(ChatClient.Builder builder) {
+    public ToolCallingController(OrderComponent orderComponent, ChatClient.Builder builder) {
+        this.orderComponent = orderComponent;
         this.chatClient = builder.build();
     }
 
@@ -53,6 +57,27 @@ public class ToolCallingController {
                 //给ai时间工具类
                 .tools(new DateUtil())
                 .user(query)
+                .options(chatOptions)
+                .call()
+                .content();
+    }
+
+    /**
+     * 接了一个查询其他项目的订单详情功能
+     * @param query 问题
+     */
+    @GetMapping("/ask2")
+    public String ask2(@RequestParam String query) {
+
+        //对话选项
+        DashScopeChatOptions chatOptions = new DashScopeChatOptions();
+        chatOptions.setModel("qwen-plus");
+        chatOptions.setTemperature(0.2);
+
+        return chatClient.prompt()
+                .system("你是订单智能客服助手")
+                .user(query)
+                .tools(orderComponent)
                 .options(chatOptions)
                 .call()
                 .content();

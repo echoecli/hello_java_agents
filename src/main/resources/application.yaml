@@ -24,12 +24,18 @@ spring:
         prefix: zwq_rag_prefix
         index-name: zwq_rag_index
     mcp:
+      server:
+        enabled: true
       client:
-        sse:
+         type: async  # 与服务端一致，异步调用
+         request-timeout: 60s # 调用超时时间，可根据实际调整
+         toolcallback:
+           enabled: true # 启用工具回调，用于接收服务端响应
+         sse:
           connections:
-            server1:
-              #mcp服务url
-              url: http://localhost:1314
+          #和信订单mcp服务url
+           hexin_order_server:
+             url: http://localhost:8888
 
   data:
     redis:

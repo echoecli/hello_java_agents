@@ -1,15 +1,17 @@
 package cn.zwq.component;
 
-
 import cn.hutool.http.HttpRequest;
 import cn.zwq.dto.OmsOrderDetailDto;
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
 
+/**
+ * 订单查询工具 - 通过 MCP 协议对外暴露
+ * 外部 AI 客户端可通过 MCP 协议调用这些工具
+ */
 @Component
 @Slf4j
 public class OrderComponent {
