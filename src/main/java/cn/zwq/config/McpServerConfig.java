@@ -15,13 +15,13 @@ import java.util.List;
  * 依赖: spring-ai-starter-mcp-server-webflux
  * 端点:
  */
-@Configuration
+//@Configuration
 public class McpServerConfig {
 
     /**
      * Spring AI 1.0.0 版本的 MCP Server 自动配置会自动检测 ToolCallbackProvider Bean 并暴露为 MCP 工具
      */
-    @Bean
+//    @Bean
     public MethodToolCallbackProvider orderToolCallbackProvider(OrderComponent orderComponent) {
         return MethodToolCallbackProvider.builder()
                 .toolObjects(orderComponent)
